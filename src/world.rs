@@ -22,7 +22,8 @@ pub struct World {
 }
 
 pub enum Square {
-	Snake,
+	SnakeHead,
+	SnakeBody,
 	Food,
 	Empty
 }
@@ -55,20 +56,32 @@ impl World {
 
 	pub fn to_string(&self) -> String {
 		let mut text = "".to_string();
+		for i in range(0, (self.width + 1) * 2) {
+			text.push_str("-");
+		}
+		text.push_str("\n");
+
 		for j in range (0, self.height) {
+			text.push_str("|");
 			for i in range(0, self.width) {
 				match (*self.state)[i][j] {
-					Snake 	=> text.push_str("+"),
+					SnakeHead	=> text.push_str("@"),
+					SnakeBody 	=> text.push_str("+"),
 					Food	=> text.push_str("x"),
-					Empty	=> text.push_str(".")
+					Empty	=> text.push_str(" ")
 				}
 
 				text.push_str(" ");
 			}
 
-			text.push_str("\n");
+			text.push_str("|\n");
 		}
 
+		for i in range(0, (self.width + 1) * 2) {
+			text.push_str("-");
+		}
+
+		text.push_str(("\nPisteesi: ".to_string() + self.score().to_string()).as_slice());
 		text
 	}
 
@@ -131,8 +144,10 @@ impl World {
 		self.check_eating();
 		self.state = World::create_state(self.height, self.width);
 		for p in self.snake.body().iter() {
-			*self.state.get_mut(p.x).get_mut(p.y) = Snake;
+			*self.state.get_mut(p.x).get_mut(p.y) = SnakeBody;
 		}
+
+		*self.state.get_mut(self.snake.head.x).get_mut(self.snake.head.y) = SnakeHead;
 
 		for f in self.food.iter() {
 			*self.state.get_mut(f.x).get_mut(f.y) = Food;
