@@ -80,9 +80,9 @@ impl World {
 	}
 
 	pub fn update(&mut self) {
-		self.snake.move(self.direction, self.width, self.height);
+		self.snake.move(self.direction, self.height, self.width);
 		self.snake_ate();
-		self.state = *World::create_state(self.width, self.height);
+		self.state = *World::create_state(self.height, self.width);
 		for p in self.snake.body.iter() {
 			*self.state.get_mut(p.x).get_mut(p.y) = Snake;
 		}

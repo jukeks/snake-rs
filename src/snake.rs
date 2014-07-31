@@ -18,16 +18,17 @@ impl Snake {
 	}
 
 	pub fn eat(&mut self) {
-		self.history.unshift(self.removed_direction);
-		self.body.unshift(self.removed_point);
+		self.history.insert(0, self.removed_direction);
+		self.body.insert(0, self.removed_point);
 	}
 
-	pub fn move(&mut self, mut direction: Direction, width: uint, height: uint) {
+	pub fn move(&mut self, mut direction: Direction, height: uint, width: uint) {
 		let last: Direction = match self.history.last() {
 			Some(d) 	=> *d,
 			None		=> Up,
 		};
 
+		// disabling reversing
 		match (last, direction) {
 			(Up, Down) => direction = last,
 			(Down, Up) => direction = last,
@@ -36,7 +37,7 @@ impl Snake {
 			_ => {}
 		}
 
-
+		// moving
 		match direction {
 			Up 		=> self.head.y = 
 						if self.head.y == 0 { 
