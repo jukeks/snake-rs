@@ -3,6 +3,9 @@ use snake::*;
 use point::*;
 use direction::*;
 
+use std::rand;
+use std::rand::Rng;
+
 pub struct World {
 	height: uint,
 	width: uint,
@@ -38,10 +41,12 @@ impl World {
 
 	pub fn new(height: uint, width: uint) -> World {
 		let snake = Snake::new(width/2, height/2);
-		let food = Point {x: width/2, y: height/2 - 5};
 
-		World {height: height, width: width, state: *World::create_state(width, height), 
-			snake: snake, direction: Down, food: vec!{food}}
+		let mut w = World {height: height, width: width, state: *World::create_state(width, height), 
+			snake: snake, direction: Down, food: vec!{}};
+		w.add_food();
+
+		w
 	}
 
 	pub fn as_text(&self) -> String {
@@ -51,7 +56,7 @@ impl World {
 				match self.state[i][j] {
 					Snake 	=> text.push_str("+"),
 					Food	=> text.push_str("x"),
-					Empty	=> text.push_str(".")
+					Empty	=> text.push_str(" ")
 				}
 
 				text.push_str(" ");
@@ -79,7 +84,34 @@ impl World {
 		if found {
 			self.snake.eat();
 			self.food.remove(i);
+			self.add_food();
 		}
+	}
+
+	fn add_food(&mut self) {
+   		let mut rng = rand::task_rng();
+
+   		loop {
+   			let x: uint = rng.gen_range(0, self.width);
+   			let y: uint = rng.gen_range(0, self.height);
+   			
+   			let f = Point {x: x, y: y};
+   			let mut collision = false;
+   			for p in self.snake.body().iter() {
+   				if *p == f {
+   					collision = true;
+   					break;
+   				}
+   			}
+
+   			if collision {
+   				continue;
+   			}
+
+   			self.food.push(f);
+   			break;
+   		}
+   		
 	}
 
 	pub fn update(&mut self) {
