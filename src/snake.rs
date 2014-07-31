@@ -22,24 +22,20 @@ impl Snake {
 		self.body.unshift(self.removed_point);
 	}
 
-	pub fn move(&mut self, direction: Direction, width: uint, height: uint) {
+	pub fn move(&mut self, mut direction: Direction, width: uint, height: uint) {
 		let last: Direction = match self.history.last() {
 			Some(d) 	=> *d,
 			None		=> Up,
 		};
 
-		/*
-		if last == direction {
-			return;
-		} else if last == Up && direction == Down {
-			return;
-		} else if last == Down && direction == Up {
-			return;
-		} else if last == Left && direction == Right {
-			return;
-		} else if last == Right && direction == Left {
-			return;
-		}*/
+		match (last, direction) {
+			(Up, Down) => direction = last,
+			(Down, Up) => direction = last,
+			(Left, Right) => direction = last,
+			(Right, Left) => direction = last,
+			_ => {}
+		}
+
 
 		match direction {
 			Up 		=> self.head.y = 
