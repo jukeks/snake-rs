@@ -26,8 +26,8 @@ pub enum WorldState {
 }
 
 impl World {
-	fn create_state(height: uint, width: uint) -> Box<Vec<Vec<WorldState>>> {
-		let mut state: Box<Vec<Vec<WorldState>>> = box Vec::with_capacity(width);
+	fn create_state(height: uint, width: uint) -> Vec<Vec<WorldState>> {
+		let mut state: Vec<Vec<WorldState>> = Vec::with_capacity(width);
 
 		for i in range(0, width) {
 			let mut tmp: Vec<WorldState> = Vec::with_capacity(height);
@@ -44,7 +44,7 @@ impl World {
 	pub fn new(height: uint, width: uint) -> World {
 		let snake = Snake::new(width/2, height/2);
 
-		let mut w = World {height: height, width: width, state: *World::create_state(width, height), 
+		let mut w = World {height: height, width: width, state: World::create_state(width, height), 
 			snake: snake, direction: Down, food: vec!{}, ended: false};
 		w.add_food();
 
@@ -58,7 +58,7 @@ impl World {
 				match self.state[i][j] {
 					Snake 	=> text.push_str("+"),
 					Food	=> text.push_str("x"),
-					Empty	=> text.push_str(" ")
+					Empty	=> text.push_str(".")
 				}
 
 				text.push_str(" ");
@@ -128,7 +128,7 @@ impl World {
 		}
 
 		self.snake_ate();
-		self.state = *World::create_state(self.height, self.width);
+		self.state = World::create_state(self.height, self.width);
 		for p in self.snake.body().iter() {
 			*self.state.get_mut(p.x).get_mut(p.y) = Snake;
 		}
