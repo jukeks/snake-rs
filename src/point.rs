@@ -8,3 +8,9 @@ impl PartialEq for Point {
 		self.x == rhs.x && self.y == rhs.y
 	}
 }
+
+impl Clone for Point {
+	fn clone(&self) -> Point {
+		Point {x: self.x, y: self.y}
+	}
+}

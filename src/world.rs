@@ -121,7 +121,7 @@ impl World {
 	}
 
 	pub fn update(&mut self) {
-		self.snake.move(self.direction, self.height, self.width);
+		self.snake.move(self.direction);
 		if self.snake.check_dead(self.height, self.width) {
 			self.ended = true;
 			return;

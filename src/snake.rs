@@ -4,53 +4,43 @@ use direction::*;
 
 pub struct Snake {
 	pub head: Point,
-	history: Vec<History>,
+	body: Vec<Point>,
 	pub len: uint,
-	popped_history: History,
+	last_direction: Direction,
+	tail: Point,
 }
 
-struct History {
-	p: Point,
-	d: Direction,
-}
 
 impl Snake {
 	pub fn new(x: uint, y: uint) -> Snake {
 		let p = Point {x: x, y: y};
-		let history = History {p: p, d: Up};
-		Snake {head: p, history: vec!{history}, 
-		len: 1, popped_history: history}
+		Snake {head: p, body: vec!{p}, 
+		len: 1, tail: p, last_direction: Up}
 	}
 
 	pub fn eat(&mut self) {
 		self.len += 1;
-		self.history.insert(0, self.popped_history);
+		self.body.insert(0, self.tail);
 	}
 
-
-	pub fn body(&self) -> Vec<Point> {
-		let mut v: Vec<Point> = vec!{};
-		for h in self.history.iter() {
-			v.push(h.p);
-		}
-
-		v
+	pub fn body(&self) -> &Vec<Point> {
+		&self.body
 	}
 
 	pub fn check_dead(&self, height: uint, width: uint) -> bool {
-		let mut body = self.body();
-		for p in body.iter() {
+		// checking if snake outside of field
+		for p in self.body.iter() {
 			if p.x < 0 || p.x > width - 1 ||
 				p.y < 0 || p.y > height - 1 {
 				return true;
 			}
 		}
 
-		while !body.is_empty() {
-			let h = body.pop().unwrap();
-
-			for p in body.iter() {
-				if *p == h {
+		// checking if snake's body parts overlapping
+		for i in range(0, self.body.len()) {
+			let p = self.body[i];
+			for j in range(i + 1, self.body.len()) {
+				if self.body[j] == p {
 					return true;
 				}
 			}
@@ -59,18 +49,13 @@ impl Snake {
 		return false;
 	}
 
-	pub fn move(&mut self, mut direction: Direction, height: uint, width: uint) {
-		let last = match self.history.last() {
-			Some(d) 	=> *d,
-			None		=> History {p: self.head, d: Up},
-		};
-
+	pub fn move(&mut self, mut direction: Direction) {
 		// disabling reversing
-		match (last.d, direction) {
-			(Up, Down) => direction = last.d,
-			(Down, Up) => direction = last.d,
-			(Left, Right) => direction = last.d,
-			(Right, Left) => direction = last.d,
+		match (self.last_direction, direction) {
+			(Up, Down) => direction = self.last_direction,
+			(Down, Up) => direction = self.last_direction,
+			(Left, Right) => direction = self.last_direction,
+			(Right, Left) => direction = self.last_direction,
 			_ => {}
 		}
 
@@ -82,9 +67,11 @@ impl Snake {
 			Left 	=> self.head.x -= 1
 		}
 
+		// removing from tail and adding to head
+		self.body.push(self.head);
+		self.tail = self.body[0];
+		self.body.remove(0);
 
-		self.history.push(History{p: self.head, d: direction});
-		self.popped_history = self.history[0];
-		self.history.remove(0);
+		self.last_direction = direction;
 	}
 }
