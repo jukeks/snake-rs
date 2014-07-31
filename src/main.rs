@@ -55,7 +55,7 @@ fn main() {
 
 		clear();
 
-		printw(w.as_text().as_slice());
+		printw(w.to_string().as_slice());
 
 		let c = getch();
 

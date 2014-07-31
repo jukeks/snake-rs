@@ -6,11 +6,13 @@ use direction::*;
 use std::rand;
 use std::rand::Rng;
 
+type State = Vec<Vec<Square>>;
+
 pub struct World {
 	height: uint,
 	width: uint,
 
-	state: Vec<Vec<WorldState>>,
+	state: Box<State>,
 	food: Vec<Point>,
 
 	snake: Snake,
@@ -19,18 +21,18 @@ pub struct World {
 	pub ended: bool
 }
 
-pub enum WorldState {
+pub enum Square {
 	Snake,
 	Food,
 	Empty
 }
 
 impl World {
-	fn create_state(height: uint, width: uint) -> Vec<Vec<WorldState>> {
-		let mut state: Vec<Vec<WorldState>> = Vec::with_capacity(width);
+	fn create_state(height: uint, width: uint) -> Box<State> {
+		let mut state: Box<State> = box Vec::with_capacity(width);
 
 		for i in range(0, width) {
-			let mut tmp: Vec<WorldState> = Vec::with_capacity(height);
+			let mut tmp: Vec<Square> = Vec::with_capacity(height);
 			for j in range(0, height) {
 				tmp.push(Empty);
 			}
@@ -51,11 +53,11 @@ impl World {
 		w
 	}
 
-	pub fn as_text(&self) -> String {
+	pub fn to_string(&self) -> String {
 		let mut text = "".to_string();
 		for j in range (0, self.height) {
 			for i in range(0, self.width) {
-				match self.state[i][j] {
+				match (*self.state)[i][j] {
 					Snake 	=> text.push_str("+"),
 					Food	=> text.push_str("x"),
 					Empty	=> text.push_str(".")
@@ -71,11 +73,10 @@ impl World {
 	}
 
 	fn check_eating(&mut self) {
-		let head = self.snake.head;
 		let mut i = 0;
 		let mut found = false;
 		for f in self.food.iter() {
-			if *f == head {
+			if *f == self.snake.head {
 				found = true;
 				break;
 			}
