@@ -40,10 +40,12 @@ fn main() {
 
 	let mut next = time_in_ms() + UPDATE_INTERVAL;
 
+	let mut direction = direction::Up;
+
 	loop {
 		if time_in_ms() > next {
 			next += UPDATE_INTERVAL;
-			w.update();
+			w.update(direction);
 			if w.ended {
 				game_over();
 				break;
@@ -51,10 +53,10 @@ fn main() {
 		}
 
 		match getch() {
-			KEY_W 	=> w.direction = direction::Up,
-			KEY_S 	=> w.direction = direction::Down,
-			KEY_A 	=> w.direction = direction::Left,
-			KEY_D 	=> w.direction = direction::Right,
+			KEY_W 	=> direction = direction::Up,
+			KEY_S 	=> direction = direction::Down,
+			KEY_A 	=> direction = direction::Left,
+			KEY_D 	=> direction = direction::Right,
 			KEY_Q 	=> break,
 			_		=> {}
 		}

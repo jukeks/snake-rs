@@ -16,7 +16,6 @@ pub struct World {
 	food: Point,
 
 	snake: Snake,
-	pub direction: Direction,
 
 	pub ended: bool
 }
@@ -47,8 +46,9 @@ impl World {
 	pub fn new(height: uint, width: uint) -> World {
 		let snake = Snake::new(width/2, height/2);
 
-		let mut w = World {height: height, width: width, state: World::create_state(height, width), 
-			snake: snake, direction: Down, food: Point {x: 0, y: 0}, ended: false};
+		let mut w = World {height: height, width: width, state: 
+			World::create_state(height, width), snake: snake, 
+			food: Point {x: 0, y: 0}, ended: false};
 		w.add_food();
 		w.update_state();
 
@@ -146,8 +146,8 @@ impl World {
 		self.snake.len
 	}
 
-	pub fn update(&mut self) {
-		self.snake.move(self.direction);
+	pub fn update(&mut self, direction: Direction) {
+		self.snake.move(direction);
 		if self.check_dead() {
 			self.ended = true;
 			return;
