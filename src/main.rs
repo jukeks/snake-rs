@@ -4,6 +4,8 @@
 extern crate ncurses;
 extern crate time;
 
+use std::fmt;
+
 use ncurses::*;
 
 mod snake;
@@ -17,10 +19,17 @@ static KEY_A: i32 = 'a' as i32;
 static KEY_S: i32 = 's' as i32;
 static KEY_D: i32 = 'd' as i32;
 
-static UPDATE_INTERVAL: u64 = 150;
+static UPDATE_INTERVAL: u64 = 100;
 
 fn time_in_ms() -> u64 {
 	time::precise_time_ns() / 1000 / 1000
+}
+
+fn game_over(world: &world::World) {
+	timeout(-1);
+	printw(format_args!(fmt::format, "Hävisit pelin! Pisteesi: {}", world.score()).as_slice());
+	refresh();
+	getch();
 }
 
 fn main() {
@@ -38,6 +47,10 @@ fn main() {
 		if time_in_ms() > next {
 			next += UPDATE_INTERVAL;
 			w.update();
+			if w.ended {
+				game_over(&w);
+				break;
+			}
 		}
 
 		clear();

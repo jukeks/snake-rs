@@ -14,7 +14,9 @@ pub struct World {
 	food: Vec<Point>,
 
 	snake: Snake,
-	pub direction: Direction
+	pub direction: Direction,
+
+	pub ended: bool
 }
 
 pub enum WorldState {
@@ -43,7 +45,7 @@ impl World {
 		let snake = Snake::new(width/2, height/2);
 
 		let mut w = World {height: height, width: width, state: *World::create_state(width, height), 
-			snake: snake, direction: Down, food: vec!{}};
+			snake: snake, direction: Down, food: vec!{}, ended: false};
 		w.add_food();
 
 		w
@@ -114,8 +116,17 @@ impl World {
    		
 	}
 
+	pub fn score(&self) -> uint {
+		self.snake.len
+	}
+
 	pub fn update(&mut self) {
 		self.snake.move(self.direction, self.height, self.width);
+		if self.snake.check_dead(self.height, self.width) {
+			self.ended = true;
+			return;
+		}
+
 		self.snake_ate();
 		self.state = *World::create_state(self.height, self.width);
 		for p in self.snake.body().iter() {

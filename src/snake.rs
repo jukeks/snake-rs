@@ -5,7 +5,7 @@ use direction::*;
 pub struct Snake {
 	pub head: Point,
 	history: Vec<History>,
-	len: uint,
+	pub len: uint,
 	popped_history: History,
 }
 
@@ -37,6 +37,28 @@ impl Snake {
 		v
 	}
 
+	pub fn check_dead(&self, height: uint, width: uint) -> bool {
+		let mut body = self.body();
+		for p in body.iter() {
+			if p.x < 0 || p.x > width - 1 ||
+				p.y < 0 || p.y > height - 1 {
+				return true;
+			}
+		}
+
+		while !body.is_empty() {
+			let h = body.pop().unwrap();
+
+			for p in body.iter() {
+				if *p == h {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
 	pub fn move(&mut self, mut direction: Direction, height: uint, width: uint) {
 		let last = match self.history.last() {
 			Some(d) 	=> *d,
@@ -54,30 +76,10 @@ impl Snake {
 
 		// moving
 		match direction {
-			Up 		=> self.head.y = 
-						if self.head.y == 0 { 
-							0 
-						} else {
-							self.head.y - 1
-						},
-			Down	=> self.head.y = 
-						if self.head.y == height - 1 {
-							height - 1
-						} else {
-							self.head.y + 1
-						},
-			Right	=> self.head.x = 
-						if self.head.x == width - 1 {
-							width - 1
-						} else {
-							self.head.x + 1
-						},
-			Left 	=> self.head.x = 
-						if self.head.x == 0 {
-							0
-						} else {
-							self.head.x - 1
-						}
+			Up 		=> self.head.y -= 1,
+			Down	=> self.head.y += 1,
+			Right	=> self.head.x += 1,
+			Left 	=> self.head.x -= 1
 		}
 
 
