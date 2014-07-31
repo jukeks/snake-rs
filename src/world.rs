@@ -36,9 +36,12 @@ impl World {
 		state
 	}
 
-	pub fn new(height: uint, width: uint, snake: Snake) -> World {
+	pub fn new(height: uint, width: uint) -> World {
+		let snake = Snake::new(width/2, height/2);
+		let food = Point {x: width/2, y: height/2 - 5};
+
 		World {height: height, width: width, state: *World::create_state(width, height), 
-			snake: snake, direction: Down, food: vec!{}}
+			snake: snake, direction: Down, food: vec!{food}}
 	}
 
 	pub fn as_text(&self) -> String {
@@ -83,8 +86,12 @@ impl World {
 		self.snake.move(self.direction, self.height, self.width);
 		self.snake_ate();
 		self.state = *World::create_state(self.height, self.width);
-		for p in self.snake.body.iter() {
+		for p in self.snake.body().iter() {
 			*self.state.get_mut(p.x).get_mut(p.y) = Snake;
+		}
+
+		for f in self.food.iter() {
+			*self.state.get_mut(f.x).get_mut(f.y) = Food;
 		}
 	}
 }

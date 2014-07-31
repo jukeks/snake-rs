@@ -24,8 +24,7 @@ fn time_in_ms() -> u64 {
 }
 
 fn main() {
-	let s = snake::Snake::new(5, 1);
-	let mut w = world::World::new(20, 30, s);
+	let mut w = world::World::new(20, 30);
 	w.update();
 
 	/* Start ncurses. */
@@ -55,8 +54,6 @@ fn main() {
 			KEY_Q 	=> break,
 			_		=> {}
 		}
-
-		printw(c.to_string().as_slice());
 
 		refresh();
 

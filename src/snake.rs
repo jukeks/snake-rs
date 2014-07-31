@@ -4,36 +4,51 @@ use direction::*;
 
 pub struct Snake {
 	pub head: Point,
-	pub body: Vec<Point>,
-	history: Vec<Direction>,
-	removed_point: Point,
-	removed_direction: Direction
+	history: Vec<History>,
+	len: uint,
+	popped_history: History,
+}
+
+struct History {
+	p: Point,
+	d: Direction,
 }
 
 impl Snake {
 	pub fn new(x: uint, y: uint) -> Snake {
 		let p = Point {x: x, y: y};
-		Snake {head: p, body: vec!{p}, history: vec!{}, 
-		removed_point: p, removed_direction: Up}
+		let history = History {p: p, d: Up};
+		Snake {head: p, history: vec!{history}, 
+		len: 1, popped_history: history}
 	}
 
 	pub fn eat(&mut self) {
-		self.history.insert(0, self.removed_direction);
-		self.body.insert(0, self.removed_point);
+		self.len += 1;
+		self.history.insert(0, self.popped_history);
+	}
+
+
+	pub fn body(&self) -> Vec<Point> {
+		let mut v: Vec<Point> = vec!{};
+		for h in self.history.iter() {
+			v.push(h.p);
+		}
+
+		v
 	}
 
 	pub fn move(&mut self, mut direction: Direction, height: uint, width: uint) {
-		let last: Direction = match self.history.last() {
+		let last = match self.history.last() {
 			Some(d) 	=> *d,
-			None		=> Up,
+			None		=> History {p: self.head, d: Up},
 		};
 
 		// disabling reversing
-		match (last, direction) {
-			(Up, Down) => direction = last,
-			(Down, Up) => direction = last,
-			(Left, Right) => direction = last,
-			(Right, Left) => direction = last,
+		match (last.d, direction) {
+			(Up, Down) => direction = last.d,
+			(Down, Up) => direction = last.d,
+			(Left, Right) => direction = last.d,
+			(Right, Left) => direction = last.d,
 			_ => {}
 		}
 
@@ -65,7 +80,9 @@ impl Snake {
 						}
 		}
 
-		self.history.push(direction);
-		self.body = vec!{self.head};
+
+		self.history.push(History{p: self.head, d: direction});
+		self.popped_history = self.history[0];
+		self.history.remove(0);
 	}
 }
