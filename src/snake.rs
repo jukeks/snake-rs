@@ -6,7 +6,7 @@ pub struct Snake {
 	pub head: Point,
 	body: Vec<Point>,
 	pub len: uint,
-	last_direction: Direction,
+	current_direction: Direction,
 	tail: Point,
 }
 
@@ -15,7 +15,7 @@ impl Snake {
 	pub fn new(x: uint, y: uint) -> Snake {
 		let p = Point {x: x, y: y};
 		Snake {head: p, body: vec!{p}, 
-		len: 1, tail: p, last_direction: Up}
+		len: 1, tail: p, current_direction: Up}
 	}
 
 	pub fn eat(&mut self) {
@@ -27,35 +27,13 @@ impl Snake {
 		&self.body
 	}
 
-	pub fn check_dead(&self, height: uint, width: uint) -> bool {
-		// checking if snake outside of field
-		for p in self.body.iter() {
-			if p.x < 0 || p.x > width - 1 ||
-				p.y < 0 || p.y > height - 1 {
-				return true;
-			}
-		}
-
-		// checking if snake's body parts overlapping
-		for i in range(0, self.body.len()) {
-			let p = self.body[i];
-			for j in range(i + 1, self.body.len()) {
-				if self.body[j] == p {
-					return true;
-				}
-			}
-		}
-
-		return false;
-	}
-
 	pub fn move(&mut self, mut direction: Direction) {
 		// disabling reversing
-		match (self.last_direction, direction) {
-			(Up, Down) => direction = self.last_direction,
-			(Down, Up) => direction = self.last_direction,
-			(Left, Right) => direction = self.last_direction,
-			(Right, Left) => direction = self.last_direction,
+		match (self.current_direction, direction) {
+			(Up, Down) => direction = self.current_direction,
+			(Down, Up) => direction = self.current_direction,
+			(Left, Right) => direction = self.current_direction,
+			(Right, Left) => direction = self.current_direction,
 			_ => {}
 		}
 
@@ -72,6 +50,6 @@ impl Snake {
 		self.tail = self.body[0];
 		self.body.remove(0);
 
-		self.last_direction = direction;
+		self.current_direction = direction;
 	}
 }

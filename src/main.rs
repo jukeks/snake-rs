@@ -17,7 +17,7 @@ static KEY_A: i32 = 'a' as i32;
 static KEY_S: i32 = 's' as i32;
 static KEY_D: i32 = 'd' as i32;
 
-static UPDATE_INTERVAL: u64 = 100;
+static UPDATE_INTERVAL: u64 = 120;
 
 fn time_in_ms() -> u64 {
 	time::precise_time_ns() / 1000 / 1000
@@ -32,13 +32,12 @@ fn game_over() {
 
 fn main() {
 	let mut w = world::World::new(20, 30);
-	w.update();
 
-	/* Start ncurses. */
+	// Start ncurses.
 	initscr();
 	noecho();
-
 	timeout(0);
+
 	let mut next = time_in_ms() + UPDATE_INTERVAL;
 
 	loop {
@@ -51,13 +50,7 @@ fn main() {
 			}
 		}
 
-		clear();
-
-		printw(w.to_string().as_slice());
-
-		let c = getch();
-
-		match c {
+		match getch() {
 			KEY_W 	=> w.direction = direction::Up,
 			KEY_S 	=> w.direction = direction::Down,
 			KEY_A 	=> w.direction = direction::Left,
@@ -66,9 +59,11 @@ fn main() {
 			_		=> {}
 		}
 
+		clear();
+		printw(w.to_string().as_slice());
 		refresh();
 
-		std::io::timer::sleep(20);
+		std::io::timer::sleep(5);
 	}
 
 	endwin();

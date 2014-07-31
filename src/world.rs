@@ -13,7 +13,7 @@ pub struct World {
 	width: uint,
 
 	state: Box<State>,
-	food: Vec<Point>,
+	food: Point,
 
 	snake: Snake,
 	pub direction: Direction,
@@ -47,9 +47,10 @@ impl World {
 	pub fn new(height: uint, width: uint) -> World {
 		let snake = Snake::new(width/2, height/2);
 
-		let mut w = World {height: height, width: width, state: World::create_state(width, height), 
-			snake: snake, direction: Down, food: vec!{}, ended: false};
+		let mut w = World {height: height, width: width, state: World::create_state(height, width), 
+			snake: snake, direction: Down, food: Point {x: 0, y: 0}, ended: false};
 		w.add_food();
+		w.update_state();
 
 		w
 	}
@@ -85,21 +86,32 @@ impl World {
 		text
 	}
 
-	fn check_eating(&mut self) {
-		let mut i = 0;
-		let mut found = false;
-		for f in self.food.iter() {
-			if *f == self.snake.head {
-				found = true;
-				break;
+	fn check_dead(&self) -> bool {
+		let body = self.snake.body();
+		// checking if snake outside of field
+		for p in body.iter() {
+			if p.x < 0 || p.x > self.width - 1 ||
+				p.y < 0 || p.y > self.height - 1 {
+				return true;
 			}
-
-			i += 1;
 		}
 
-		if found {
+		// checking if snake's body parts are overlapping
+		for i in range(0, body.len()) {
+			let p = body[i];
+			for j in range(i + 1, body.len()) {
+				if body[j] == p {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	fn check_eating(&mut self) {
+		if self.snake.head == self.food {
 			self.snake.eat();
-			self.food.remove(i);
 			self.add_food();
 		}
 	}
@@ -107,6 +119,7 @@ impl World {
 	fn add_food(&mut self) {
    		let mut rng = rand::task_rng();
 
+   		// looping if collision happens
    		loop {
    			let x: uint = rng.gen_range(0, self.width);
    			let y: uint = rng.gen_range(0, self.height);
@@ -124,10 +137,9 @@ impl World {
    				continue;
    			}
 
-   			self.food.push(f);
+   			self.food = f;
    			break;
    		}
-   		
 	}
 
 	pub fn score(&self) -> uint {
@@ -136,21 +148,22 @@ impl World {
 
 	pub fn update(&mut self) {
 		self.snake.move(self.direction);
-		if self.snake.check_dead(self.height, self.width) {
+		if self.check_dead() {
 			self.ended = true;
 			return;
 		}
 
 		self.check_eating();
 		self.state = World::create_state(self.height, self.width);
+		self.update_state();
+	}
+
+	fn update_state(&mut self) {
 		for p in self.snake.body().iter() {
 			*self.state.get_mut(p.x).get_mut(p.y) = SnakeBody;
 		}
 
 		*self.state.get_mut(self.snake.head.x).get_mut(self.snake.head.y) = SnakeHead;
-
-		for f in self.food.iter() {
-			*self.state.get_mut(f.x).get_mut(f.y) = Food;
-		}
+		*self.state.get_mut(self.food.x).get_mut(self.food.y) = Food;
 	}
 }
