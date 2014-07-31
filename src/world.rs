@@ -70,7 +70,7 @@ impl World {
 		text
 	}
 
-	fn snake_ate(&mut self) {
+	fn check_eating(&mut self) {
 		let head = self.snake.head;
 		let mut i = 0;
 		let mut found = false;
@@ -127,7 +127,7 @@ impl World {
 			return;
 		}
 
-		self.snake_ate();
+		self.check_eating();
 		self.state = World::create_state(self.height, self.width);
 		for p in self.snake.body().iter() {
 			*self.state.get_mut(p.x).get_mut(p.y) = Snake;
