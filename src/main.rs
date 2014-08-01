@@ -12,10 +12,6 @@ mod direction;
 mod point;
 
 static KEY_Q: i32 = 'q' as i32;
-static KEY_W: i32 = 'w' as i32;
-static KEY_A: i32 = 'a' as i32;
-static KEY_S: i32 = 's' as i32;
-static KEY_D: i32 = 'd' as i32;
 
 static UPDATE_INTERVAL: u64 = 120;
 
@@ -35,6 +31,7 @@ fn main() {
 
 	// Start ncurses.
 	initscr();
+	keypad(stdscr, true);
 	noecho();
 	timeout(0);
 
@@ -53,10 +50,10 @@ fn main() {
 		}
 
 		match getch() {
-			KEY_W 	=> direction = direction::Up,
-			KEY_S 	=> direction = direction::Down,
-			KEY_A 	=> direction = direction::Left,
-			KEY_D 	=> direction = direction::Right,
+			KEY_UP 	=> direction = direction::Up,
+			KEY_DOWN 	=> direction = direction::Down,
+			KEY_LEFT 	=> direction = direction::Left,
+			KEY_RIGHT 	=> direction = direction::Right,
 			KEY_Q 	=> break,
 			_		=> {}
 		}
