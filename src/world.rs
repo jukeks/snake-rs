@@ -143,7 +143,7 @@ impl World {
 	}
 
 	pub fn score(&self) -> uint {
-		self.snake.len
+		(self.snake.len - 1) * 10
 	}
 
 	pub fn update(&mut self, direction: Direction) {
