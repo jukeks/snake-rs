@@ -13,9 +13,9 @@ pub struct World {
 	width: uint,
 
 	state: Box<State>,
-	food: Point,
+	pub food: Point,
 
-	snake: Snake,
+	pub snake: Snake,
 
 	pub ended: bool
 }

@@ -6,7 +6,7 @@ pub struct Snake {
 	pub head: Point,
 	body: Vec<Point>,
 	pub len: uint,
-	current_direction: Direction,
+	pub current_direction: Direction,
 	tail: Point,
 }
 

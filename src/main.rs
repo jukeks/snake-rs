@@ -6,10 +6,13 @@ extern crate time;
 
 use ncurses::*;
 
+use std::os;
+
 mod snake;
 mod world;
 mod direction;
 mod point;
+mod ai;
 
 static KEY_Q: i32 = 'q' as i32;
 
@@ -27,6 +30,16 @@ fn game_over() {
 }
 
 fn main() {
+	let mut ai_game = false;
+	let args = os::args();
+	if args.len() > 1 {
+		ai_game = args[1] == "-ai".to_string();
+	}
+
+	game_loop(ai_game);
+}
+
+fn game_loop(ai_game: bool) {
 	let mut w = world::World::new(20, 30);
 
 	// Start ncurses.
@@ -53,7 +66,13 @@ fn main() {
 			refresh();
 		}
 
-		match getch() {
+		let input = if ai_game {
+			ai::get_input(&w)
+		} else {
+			getch()
+		};
+
+		match input {
 			KEY_UP 	=> direction = direction::Up,
 			KEY_DOWN 	=> direction = direction::Down,
 			KEY_LEFT 	=> direction = direction::Left,
