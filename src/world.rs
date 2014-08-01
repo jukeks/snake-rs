@@ -9,8 +9,8 @@ use std::rand::Rng;
 type State = Vec<Vec<Square>>;
 
 pub struct World {
-	height: uint,
-	width: uint,
+	pub height: uint,
+	pub width: uint,
 
 	state: Box<State>,
 	pub food: Point,

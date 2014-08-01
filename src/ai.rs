@@ -2,6 +2,7 @@
 use world::*;
 use direction::*;
 use point::*;
+use snake::*;
 
 use ncurses::*;
 
@@ -56,8 +57,14 @@ pub fn get_input(world: &World) -> i32 {
 	};
 
 	let mut alternatives = vec!{KEY_UP, KEY_DOWN, KEY_RIGHT, KEY_LEFT};
+	let ref snake = world.snake;
+
 	while !alternatives.is_empty() {
-		if about_to_collide_self(world, decision) {
+		let ref mut head = snake.head.clone();
+		apply_decision(head, decision);
+
+		if about_to_collide_self(snake, head) 
+			|| about_to_collide_wall(world, head) {
 			decision = alternatives.pop().unwrap();
 			continue;
 		}
@@ -68,7 +75,7 @@ pub fn get_input(world: &World) -> i32 {
 	decision
 }
 
-fn calculate_decision(point: &mut Point, decision: i32) {
+fn apply_decision(point: &mut Point, decision: i32) {
 	match decision {
 		KEY_UP 		=> point.y -= 1,
 		KEY_DOWN	=> point.y += 1,
@@ -78,11 +85,7 @@ fn calculate_decision(point: &mut Point, decision: i32) {
 	}	
 }
 
-fn about_to_collide_self(world: &World, decision: i32) -> bool {
-	let ref snake = world.snake;
-	let ref mut head = snake.head.clone();
-	calculate_decision(head, decision);
-
+fn about_to_collide_self(snake: &Snake, head: &Point) -> bool {
 	let body = snake.body();
 	for p in body.iter() {
 		if *head == *p {
@@ -91,4 +94,9 @@ fn about_to_collide_self(world: &World, decision: i32) -> bool {
 	}
 
 	false
+}
+
+fn about_to_collide_wall(world: &World, head: &Point) -> bool {
+	head.x == 0u - 1 || head.x == world.width ||
+		head.y == 0u - 1 || head.y == world.height
 }
