@@ -90,8 +90,8 @@ impl World {
 		let body = self.snake.body();
 		// checking if snake outside of field
 		for p in body.iter() {
-			if p.x < 0 || p.x > self.width - 1 ||
-				p.y < 0 || p.y > self.height - 1 {
+			if p.x == 0u - 1 || p.x == self.width ||
+				p.y == 0u - 1 || p.y == self.height {
 				return true;
 			}
 		}
