@@ -47,6 +47,10 @@ fn main() {
 				game_over();
 				break;
 			}
+
+			clear();
+			printw(w.to_string().as_slice());
+			refresh();
 		}
 
 		match getch() {
@@ -57,10 +61,6 @@ fn main() {
 			KEY_Q 	=> break,
 			_		=> {}
 		}
-
-		clear();
-		printw(w.to_string().as_slice());
-		refresh();
 
 		std::io::timer::sleep(5);
 	}
