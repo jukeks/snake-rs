@@ -10,6 +10,14 @@ pub struct Snake {
 	tail: Point,
 }
 
+impl Clone for Snake {
+	fn clone(&self) -> Snake {
+		Snake {head: self.head, body: self.body.clone(),
+			len: self.len, current_direction: self.current_direction,
+			tail: self.tail}
+	}
+}
+
 
 impl Snake {
 	pub fn new(x: uint, y: uint) -> Snake {
