@@ -97,16 +97,7 @@ impl World {
 		}
 
 		// checking if snake's body parts are overlapping
-		for i in range(0, body.len()) {
-			let p = body[i];
-			for j in range(i + 1, body.len()) {
-				if body[j] == p {
-					return true;
-				}
-			}
-		}
-
-		return false;
+		Point::overlapping(self.snake.body())
 	}
 
 	fn check_eating(&mut self) {
