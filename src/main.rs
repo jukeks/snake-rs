@@ -55,6 +55,16 @@ fn game_loop(ai_game: bool) {
 	loop {
 		if time_in_ms() > next {
 			next += UPDATE_INTERVAL;
+			if ai_game {
+				match ai::get_input(&w) {
+					KEY_UP 	=> direction = direction::Up,
+					KEY_DOWN 	=> direction = direction::Down,
+					KEY_LEFT 	=> direction = direction::Left,
+					KEY_RIGHT 	=> direction = direction::Right,
+					_		=> {}
+				}
+			}
+
 			w.update(direction);
 			if w.ended {
 				game_over();
@@ -66,21 +76,17 @@ fn game_loop(ai_game: bool) {
 			refresh();
 		}
 
-		let input = if ai_game {
-			ai::get_input(&w)
-		} else {
-			getch()
-		};
-
-		match input {
-			KEY_UP 	=> direction = direction::Up,
-			KEY_DOWN 	=> direction = direction::Down,
-			KEY_LEFT 	=> direction = direction::Left,
-			KEY_RIGHT 	=> direction = direction::Right,
-			KEY_Q 	=> break,
-			_		=> {}
+		if !ai_game {
+			match getch() {
+				KEY_UP 	=> direction = direction::Up,
+				KEY_DOWN 	=> direction = direction::Down,
+				KEY_LEFT 	=> direction = direction::Left,
+				KEY_RIGHT 	=> direction = direction::Right,
+				KEY_Q 	=> break,
+				_		=> {}
+			}
 		}
-
+		
 		std::io::timer::sleep(5);
 	}
 
