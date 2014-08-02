@@ -8,29 +8,35 @@ use ncurses::*;
 
 pub fn get_input(world: &World) -> i32 {
 	let ref snake = world.snake;
-	
-	let dx: int = snake.head.x as int - world.food.x as int;
-	let dy: int = snake.head.y as int - world.food.y as int;
+	let ref food = world.food;
 
-	let dx_sign: int = if dx < 0 {
-		-1
-	} else if dx == 0 {
-		0
-	} else {
-		1
-	};
-	let dy_sign: int = if dy < 0 {
-		-1
-	} else if dy == 0 {
-		0
-	} else {
-		1
-	};
+	let (dx_sign, dy_sign) = signs(snake, food);
 
 	// the ones with direction specified are to prevent trying
 	// to reverse, which the snake can't do
-	let mut decision = 
-	match (dx_sign, dy_sign, snake.current_direction) {
+	let mut decision = decide_based_on_food_direction(dx_sign, dy_sign, snake.current_direction);
+
+	let mut alternatives = vec!{KEY_UP, KEY_DOWN, KEY_RIGHT, KEY_LEFT};
+	let ref snake = world.snake;
+
+	while !alternatives.is_empty() {
+		let ref mut head = snake.head.clone();
+		apply_decision(head, decision);
+
+		if about_to_collide_self(snake, head) 
+			|| about_to_collide_wall(world, head) {
+			decision = alternatives.pop().unwrap();
+			continue;
+		}
+
+		break;
+	}
+
+	decision
+}
+
+fn decide_based_on_food_direction(dx_sign: int, dy_sign: int, current_direction: Direction) -> i32 {
+	match (dx_sign, dy_sign, current_direction) {
 		// need to go left, but going right
 		(1, 	1, 	Right) 	=> KEY_UP,
 		(1,		_,	Right)	=> KEY_DOWN,
@@ -54,25 +60,29 @@ pub fn get_input(world: &World) -> i32 {
 
 		// no selection
 		(_, 	_,	_,)		=> -1
+	}
+}
+
+fn signs(snake: &Snake, food: &Point) -> (int, int) {
+	let dx: int = snake.head.x as int - food.x as int;
+	let dy: int = snake.head.y as int - food.y as int;
+
+	let dx_sign: int = if dx < 0 {
+		-1
+	} else if dx == 0 {
+		0
+	} else {
+		1
+	};
+	let dy_sign: int = if dy < 0 {
+		-1
+	} else if dy == 0 {
+		0
+	} else {
+		1
 	};
 
-	let mut alternatives = vec!{KEY_UP, KEY_DOWN, KEY_RIGHT, KEY_LEFT};
-	let ref snake = world.snake;
-
-	while !alternatives.is_empty() {
-		let ref mut head = snake.head.clone();
-		apply_decision(head, decision);
-
-		if about_to_collide_self(snake, head) 
-			|| about_to_collide_wall(world, head) {
-			decision = alternatives.pop().unwrap();
-			continue;
-		}
-
-		break;
-	}
-
-	decision
+	(dx_sign, dy_sign)
 }
 
 fn apply_decision(point: &mut Point, decision: i32) {
