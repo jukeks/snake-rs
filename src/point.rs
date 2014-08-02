@@ -14,3 +14,18 @@ impl Clone for Point {
 		Point {x: self.x, y: self.y}
 	}
 }
+
+impl Point {
+	pub fn overlapping(points: &Vec<Point>) -> bool {
+		for i in range(0, points.len()) {
+			let p = points[i];
+			for j in range(i + 1, points.len()) {
+				if points[j] == p {
+					return true;
+				}
+			}
+		}
+
+		false
+	}
+}
