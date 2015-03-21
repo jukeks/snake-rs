@@ -2,7 +2,6 @@
 #![feature(globs)]
 
 extern crate ncurses;
-extern crate time;
 
 use ncurses::*;
 
@@ -13,14 +12,11 @@ mod world;
 mod direction;
 mod point;
 mod ai;
+mod helper;
 
 static KEY_Q: i32 = 'q' as i32;
 
 static UPDATE_INTERVAL: u64 = 120;
-
-fn time_in_ms() -> u64 {
-	time::precise_time_ns() / 1000 / 1000
-}
 
 fn game_over() {
 	timeout(-1);
@@ -48,12 +44,12 @@ fn game_loop(ai_game: bool) {
 	noecho();
 	timeout(0);
 
-	let mut next = time_in_ms() + UPDATE_INTERVAL;
+	let mut next = helper::time_in_ms() + UPDATE_INTERVAL;
 
 	let mut direction = direction::Up;
 
 	loop {
-		if time_in_ms() > next {
+		if helper::time_in_ms() > next {
 			next += UPDATE_INTERVAL;
 			if ai_game {
 				match ai::get_input(&w) {
