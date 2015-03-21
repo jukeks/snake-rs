@@ -3,6 +3,7 @@ use world::*;
 use direction::*;
 use point::*;
 use snake::*;
+use helper;
 
 use ncurses::*;
 
@@ -15,13 +16,13 @@ pub fn get_input(world: &World) -> i32 {
 	let mut decision = decide_based_on_food_direction(dx_sign, dy_sign, snake.current_direction);
 
 	let ref snake = world.snake;
-	decision = escape_detection(snake, world, decision, 0);
+	decision = escape_detection(snake, world, decision, 0, helper::time_in_ms() + 500);
 
 	decision
 }
 
-fn escape_detection(snake: &Snake, world: &World, mut decision: i32, iteration: uint) -> i32 {
-	if iteration > snake.len / 2 {
+fn escape_detection(snake: &Snake, world: &World, mut decision: i32, iteration: uint, end_time: u64) -> i32 {
+	if iteration > snake.len / 2 || helper::time_in_ms() > end_time {
 		return decision;
 	}
 
@@ -37,7 +38,7 @@ fn escape_detection(snake: &Snake, world: &World, mut decision: i32, iteration: 
 		}
 		
 		
-		let escapable =  escape_detection(s, world, decision, iteration + 1);
+		let escapable =  escape_detection(s, world, decision, iteration + 1, end_time);
 		if escapable < 0 {
 			continue;
 		}
