@@ -32,12 +32,12 @@ impl World {
 		let mut state: Box<State> = Box::new(Vec::with_capacity(width));
 
 		for _ in (0..width) {
-			let mut tmp: Vec<Square> = Vec::with_capacity(height);
+			let mut column: Vec<Square> = Vec::with_capacity(height);
 			for _ in (0..height) {
-				tmp.push(Square::Empty);
+				column.push(Square::Empty);
 			}
 
-			state.push(tmp);
+			state.push(column);
 		}
 
 		state
