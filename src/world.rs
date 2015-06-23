@@ -3,14 +3,14 @@ use snake::*;
 use point::*;
 use direction::*;
 
-use std::rand;
-use std::rand::Rng;
+extern crate rand;
+use self::rand::Rng;
 
 type State = Vec<Vec<Square>>;
 
 pub struct World {
-	height: uint,
-	width: uint,
+	height: usize,
+	width: usize,
 
 	state: Box<State>,
 	food: Point,
@@ -28,13 +28,13 @@ pub enum Square {
 }
 
 impl World {
-	fn create_state(height: uint, width: uint) -> Box<State> {
-		let mut state: Box<State> = box Vec::with_capacity(width);
+	fn create_state(height: usize, width: usize) -> Box<State> {
+		let mut state: Box<State> = Box::new(Vec::with_capacity(width));
 
-		for i in range(0, width) {
+		for _ in (0..width) {
 			let mut tmp: Vec<Square> = Vec::with_capacity(height);
-			for j in range(0, height) {
-				tmp.push(Empty);
+			for _ in (0..height) {
+				tmp.push(Square::Empty);
 			}
 
 			state.push(tmp);
@@ -43,7 +43,7 @@ impl World {
 		state
 	}
 
-	pub fn new(height: uint, width: uint) -> World {
+	pub fn new(height: usize, width: usize) -> World {
 		let snake = Snake::new(width/2, height/2);
 
 		let mut w = World {height: height, width: width, state: 
@@ -57,19 +57,19 @@ impl World {
 
 	pub fn to_string(&self) -> String {
 		let mut text = "".to_string();
-		for i in range(0, (self.width + 1) * 2) {
+		for _ in (0..(self.width + 1) * 2) {
 			text.push_str("-");
 		}
 		text.push_str("\n");
 
-		for j in range (0, self.height) {
+		for j in (0..self.height) {
 			text.push_str("|");
-			for i in range(0, self.width) {
+			for i in (0..self.width) {
 				match (*self.state)[i][j] {
-					SnakeHead	=> text.push_str("@"),
-					SnakeBody 	=> text.push_str("+"),
-					Food	=> text.push_str("x"),
-					Empty	=> text.push_str(" ")
+					Square::SnakeHead	=> text.push_str("@"),
+					Square::SnakeBody 	=> text.push_str("+"),
+					Square::Food	=> text.push_str("x"),
+					Square::Empty	=> text.push_str(" ")
 				}
 
 				text.push_str(" ");
@@ -78,11 +78,11 @@ impl World {
 			text.push_str("|\n");
 		}
 
-		for i in range(0, (self.width + 1) * 2) {
+		for _ in (0..(self.width + 1) * 2) {
 			text.push_str("-");
 		}
 
-		text.push_str(("\nPisteesi: ".to_string() + self.score().to_string()).as_slice());
+		text.push_str(&("\nPisteesi: ".to_string() + &self.score().to_string()));
 		text
 	}
 
@@ -90,16 +90,16 @@ impl World {
 		let body = self.snake.body();
 		// checking if snake outside of field
 		for p in body.iter() {
-			if p.x < 0 || p.x > self.width - 1 ||
-				p.y < 0 || p.y > self.height - 1 {
+			if p.x < 0 || p.x > ((self.width - 1) as i32) ||
+				p.y < 0 || p.y > ((self.height - 1) as i32) {
 				return true;
 			}
 		}
 
 		// checking if snake's body parts are overlapping
-		for i in range(0, body.len()) {
+		for i in (0..body.len()) {
 			let p = body[i];
-			for j in range(i + 1, body.len()) {
+			for j in (i + 1..body.len()) {
 				if body[j] == p {
 					return true;
 				}
@@ -117,14 +117,13 @@ impl World {
 	}
 
 	fn add_food(&mut self) {
-   		let mut rng = rand::task_rng();
-
+		let mut rng = rand::thread_rng();
    		// looping if collision happens
    		loop {
-   			let x: uint = rng.gen_range(0, self.width);
-   			let y: uint = rng.gen_range(0, self.height);
+   			let x: usize = rng.gen_range(0, self.width);
+   			let y: usize = rng.gen_range(0, self.height);
    			
-   			let f = Point {x: x, y: y};
+   			let f = Point {x: (x as i32), y: (y as i32)};
    			let mut collision = false;
    			for p in self.snake.body().iter() {
    				if *p == f {
@@ -142,12 +141,12 @@ impl World {
    		}
 	}
 
-	pub fn score(&self) -> uint {
+	pub fn score(&self) -> usize {
 		(self.snake.len - 1) * 10
 	}
 
 	pub fn update(&mut self, direction: Direction) {
-		self.snake.move(direction);
+		self.snake.advance(direction);
 		if self.check_dead() {
 			self.ended = true;
 			return;
@@ -160,10 +159,10 @@ impl World {
 
 	fn update_state(&mut self) {
 		for p in self.snake.body().iter() {
-			*self.state.get_mut(p.x).get_mut(p.y) = SnakeBody;
+			self.state[p.x as usize][p.y as usize] = Square::SnakeBody;
 		}
 
-		*self.state.get_mut(self.snake.head.x).get_mut(self.snake.head.y) = SnakeHead;
-		*self.state.get_mut(self.food.x).get_mut(self.food.y) = Food;
+		self.state[self.snake.head.x as usize][self.snake.head.y as usize] = Square::SnakeHead;
+		self.state[self.food.x as usize][self.food.y as usize] = Square::Food;
 	}
 }

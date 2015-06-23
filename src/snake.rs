@@ -5,17 +5,17 @@ use direction::*;
 pub struct Snake {
 	pub head: Point,
 	body: Vec<Point>,
-	pub len: uint,
+	pub len: usize,
 	current_direction: Direction,
 	tail: Point,
 }
 
 
 impl Snake {
-	pub fn new(x: uint, y: uint) -> Snake {
-		let p = Point {x: x, y: y};
+	pub fn new(x: usize, y: usize) -> Snake {
+		let p = Point {x: (x as i32), y: (y as i32)};
 		Snake {head: p, body: vec!{p}, 
-		len: 1, tail: p, current_direction: Up}
+		len: 1, tail: p, current_direction: Direction::Up}
 	}
 
 	pub fn eat(&mut self) {
@@ -27,22 +27,22 @@ impl Snake {
 		&self.body
 	}
 
-	pub fn move(&mut self, mut direction: Direction) {
+	pub fn advance(&mut self, mut direction: Direction) {
 		// disabling reversing
 		match (self.current_direction, direction) {
-			(Up, Down) => direction = self.current_direction,
-			(Down, Up) => direction = self.current_direction,
-			(Left, Right) => direction = self.current_direction,
-			(Right, Left) => direction = self.current_direction,
+			(Direction::Up, Direction::Down) => direction = self.current_direction,
+			(Direction::Down, Direction::Up) => direction = self.current_direction,
+			(Direction::Left, Direction::Right) => direction = self.current_direction,
+			(Direction::Right, Direction::Left) => direction = self.current_direction,
 			_ => {}
 		}
 
 		// moving
 		match direction {
-			Up 		=> self.head.y -= 1,
-			Down	=> self.head.y += 1,
-			Right	=> self.head.x += 1,
-			Left 	=> self.head.x -= 1
+			Direction::Up 		=> self.head.y -= 1,
+			Direction::Down	=> self.head.y += 1,
+			Direction::Right	=> self.head.x += 1,
+			Direction::Left 	=> self.head.x -= 1
 		}
 
 		// removing from tail and adding to head

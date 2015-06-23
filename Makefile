@@ -1,9 +1,0 @@
-RUSTC ?= rustc
-
-dummy1 := $(shell mkdir bin 2> /dev/null)
-
-all:
-	$(RUSTC) -o bin/snake -L lib/ncurses-rs/target src/main.rs
-
-clean:
-	rm -rf bin

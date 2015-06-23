@@ -1,17 +1,15 @@
-
-#![feature(globs)]
-
 extern crate ncurses;
 extern crate time;
 
 use ncurses::*;
+use direction::*;
 
 mod snake;
 mod world;
 mod direction;
 mod point;
 
-static KEY_Q: i32 = 'q' as i32;
+const KEY_Q: i32 = 'q' as i32;
 
 static UPDATE_INTERVAL: u64 = 120;
 
@@ -37,7 +35,7 @@ fn main() {
 
 	let mut next = time_in_ms() + UPDATE_INTERVAL;
 
-	let mut direction = direction::Up;
+	let mut direction = Direction::Up;
 
 	loop {
 		if time_in_ms() > next {
@@ -50,19 +48,19 @@ fn main() {
 		}
 
 		match getch() {
-			KEY_UP 	=> direction = direction::Up,
-			KEY_DOWN 	=> direction = direction::Down,
-			KEY_LEFT 	=> direction = direction::Left,
-			KEY_RIGHT 	=> direction = direction::Right,
+			KEY_UP 	=> direction = Direction::Up,
+			KEY_DOWN 	=> direction = Direction::Down,
+			KEY_LEFT 	=> direction = Direction::Left,
+			KEY_RIGHT 	=> direction = Direction::Right,
 			KEY_Q 	=> break,
 			_		=> {}
 		}
 
 		clear();
-		printw(w.to_string().as_slice());
+		printw(&w.to_string());
 		refresh();
 
-		std::io::timer::sleep(5);
+		std::thread::sleep_ms(5);
 	}
 
 	endwin();

@@ -1,3 +1,0 @@
-[submodule "lib/ncurses-rs"]
-	path = lib/ncurses-rs
-	url = https://github.com/jeaye/ncurses-rs

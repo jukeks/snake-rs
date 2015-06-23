@@ -4,3 +4,8 @@ pub enum Direction {
 	Left,
 	Right,
 }
+
+impl Copy  for Direction {}
+impl Clone for Direction {
+	fn clone(&self) -> Direction { *self }
+}
