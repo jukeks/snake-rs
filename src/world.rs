@@ -44,11 +44,15 @@ impl World {
 	}
 
 	pub fn new(height: usize, width: usize) -> World {
-		let snake = Snake::new(width/2, height/2);
+		let mut w = World{
+			height: height,
+			width: width,
+			state: World::create_state(height, width),
+			snake: Snake::new(width/2, height/2),
+			food: Point {x: 0, y: 0},
+			ended: false
+		};
 
-		let mut w = World {height: height, width: width, state: 
-			World::create_state(height, width), snake: snake, 
-			food: Point {x: 0, y: 0}, ended: false};
 		w.add_food();
 		w.update_state();
 
@@ -66,10 +70,10 @@ impl World {
 			text.push_str("|");
 			for i in 0..self.width {
 				match (*self.state)[i][j] {
-					Square::SnakeHead	=> text.push_str("@"),
-					Square::SnakeBody 	=> text.push_str("+"),
-					Square::Food	=> text.push_str("x"),
-					Square::Empty	=> text.push_str(" ")
+					Square::SnakeHead   => text.push_str("@"),
+					Square::SnakeBody   => text.push_str("+"),
+					Square::Food        => text.push_str("x"),
+					Square::Empty       => text.push_str(" ")
 				}
 
 				text.push_str(" ");
@@ -118,27 +122,27 @@ impl World {
 
 	fn add_food(&mut self) {
 		let mut rng = rand::thread_rng();
-   		// looping if collision happens
-   		loop {
-   			let x: usize = rng.gen_range(0, self.width);
-   			let y: usize = rng.gen_range(0, self.height);
-   			
-   			let f = Point {x: (x as i32), y: (y as i32)};
-   			let mut collision = false;
-   			for p in self.snake.body().iter() {
-   				if *p == f {
-   					collision = true;
-   					break;
-   				}
-   			}
+		// looping if collision happens
+		loop {
+			let x: usize = rng.gen_range(0, self.width);
+			let y: usize = rng.gen_range(0, self.height);
 
-   			if collision {
-   				continue;
-   			}
+			let f = Point {x: (x as i32), y: (y as i32)};
+			let mut collision = false;
+			for p in self.snake.body().iter() {
+				if *p == f {
+					collision = true;
+					break;
+				}
+			}
 
-   			self.food = f;
-   			break;
-   		}
+			if collision {
+				continue;
+			}
+
+			self.food = f;
+			break;
+		}
 	}
 
 	pub fn score(&self) -> usize {

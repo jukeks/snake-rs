@@ -46,12 +46,12 @@ fn main() {
 		}
 
 		match getch() {
-			KEY_UP 	=> direction = Direction::Up,
-			KEY_DOWN 	=> direction = Direction::Down,
-			KEY_LEFT 	=> direction = Direction::Left,
-			KEY_RIGHT 	=> direction = Direction::Right,
-			KEY_Q 	=> break,
-			_		=> {}
+			KEY_UP      => direction = Direction::Up,
+			KEY_DOWN    => direction = Direction::Down,
+			KEY_LEFT    => direction = Direction::Left,
+			KEY_RIGHT   => direction = Direction::Right,
+			KEY_Q       => break,
+			_           => {}
 		}
 
 		clear();

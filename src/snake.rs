@@ -30,19 +30,20 @@ impl Snake {
 	pub fn advance(&mut self, mut direction: Direction) {
 		// disabling reversing
 		match (self.current_direction, direction) {
-			(Direction::Up, Direction::Down) => direction = self.current_direction,
-			(Direction::Down, Direction::Up) => direction = self.current_direction,
-			(Direction::Left, Direction::Right) => direction = self.current_direction,
-			(Direction::Right, Direction::Left) => direction = self.current_direction,
+			(Direction::Up, Direction::Down) |
+				(Direction::Down, Direction::Up) |
+				(Direction::Left, Direction::Right) |
+				(Direction::Right, Direction::Left) => direction = self.current_direction,
+
 			_ => {}
 		}
 
 		// moving
 		match direction {
-			Direction::Up 		=> self.head.y -= 1,
-			Direction::Down	=> self.head.y += 1,
-			Direction::Right	=> self.head.x += 1,
-			Direction::Left 	=> self.head.x -= 1
+			Direction::Up       => self.head.y -= 1,
+			Direction::Down     => self.head.y += 1,
+			Direction::Right    => self.head.x += 1,
+			Direction::Left     => self.head.x -= 1
 		}
 
 		// removing from tail and adding to head
