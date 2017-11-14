@@ -31,9 +31,9 @@ impl World {
 	fn create_state(height: usize, width: usize) -> Box<State> {
 		let mut state: Box<State> = Box::new(Vec::with_capacity(width));
 
-		for _ in (0..width) {
+		for _ in 0..width {
 			let mut column: Vec<Square> = Vec::with_capacity(height);
-			for _ in (0..height) {
+			for _ in 0..height {
 				column.push(Square::Empty);
 			}
 
@@ -57,14 +57,14 @@ impl World {
 
 	pub fn to_string(&self) -> String {
 		let mut text = "".to_string();
-		for _ in (0..(self.width + 1) * 2) {
+		for _ in 0..(self.width + 1) * 2 {
 			text.push_str("-");
 		}
 		text.push_str("\n");
 
-		for j in (0..self.height) {
+		for j in 0..self.height {
 			text.push_str("|");
-			for i in (0..self.width) {
+			for i in 0..self.width {
 				match (*self.state)[i][j] {
 					Square::SnakeHead	=> text.push_str("@"),
 					Square::SnakeBody 	=> text.push_str("+"),
@@ -78,7 +78,7 @@ impl World {
 			text.push_str("|\n");
 		}
 
-		for _ in (0..(self.width + 1) * 2) {
+		for _ in 0..(self.width + 1) * 2 {
 			text.push_str("-");
 		}
 
@@ -97,9 +97,9 @@ impl World {
 		}
 
 		// checking if snake's body parts are overlapping
-		for i in (0..body.len()) {
+		for i in 0..body.len() {
 			let p = body[i];
-			for j in (i + 1..body.len()) {
+			for j in i + 1..body.len() {
 				if body[j] == p {
 					return true;
 				}

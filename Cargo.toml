@@ -8,5 +8,5 @@ authors = ["Jukka-Pekka Virtanen <virtanen@jukk.is>"]
 git = "https://github.com/jeaye/ncurses-rs.git"
 
 [dependencies]
-time = "0.1"
+time = "*"
 rand = "*"

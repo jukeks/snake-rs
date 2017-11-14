@@ -1,5 +1,6 @@
 extern crate ncurses;
-extern crate time;
+
+use std::{thread, time};
 
 use ncurses::*;
 use direction::*;
@@ -13,10 +14,6 @@ const KEY_Q: i32 = 'q' as i32;
 
 static UPDATE_INTERVAL: u64 = 120;
 
-fn time_in_ms() -> u64 {
-	time::precise_time_ns() / 1000 / 1000
-}
-
 fn game_over() {
 	timeout(-1);
 	printw(" Hävisit pelin!");
@@ -29,17 +26,18 @@ fn main() {
 
 	// Start ncurses.
 	initscr();
-	keypad(stdscr, true);
+	keypad(stdscr(), true);
 	noecho();
 	timeout(0);
 
-	let mut next = time_in_ms() + UPDATE_INTERVAL;
+	let mut next = time::Instant::now();
+	let update_interval = time::Duration::from_millis(UPDATE_INTERVAL);
 
 	let mut direction = Direction::Up;
 
 	loop {
-		if time_in_ms() > next {
-			next += UPDATE_INTERVAL;
+		if time::Instant::now() > next {
+			next += update_interval;
 			w.update(direction);
 			if w.ended {
 				game_over();
@@ -60,7 +58,8 @@ fn main() {
 		printw(&w.to_string());
 		refresh();
 
-		std::thread::sleep_ms(5);
+		let wait = time::Duration::from_millis(5);
+		thread::sleep(wait);
 	}
 
 	endwin();
