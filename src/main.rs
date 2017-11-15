@@ -12,7 +12,7 @@ mod point;
 
 const KEY_Q: i32 = 'q' as i32;
 
-static UPDATE_INTERVAL: u64 = 120;
+static UPDATE_INTERVAL_MILLIS: u64 = 120;
 
 fn game_over() {
 	timeout(-1);
@@ -31,13 +31,13 @@ fn main() {
 	timeout(0);
 
 	let mut next = time::Instant::now();
-	let update_interval = time::Duration::from_millis(UPDATE_INTERVAL);
+	let update_interval_duration = time::Duration::from_millis(UPDATE_INTERVAL_MILLIS);
 
 	let mut direction = Direction::Up;
 
 	loop {
 		if time::Instant::now() > next {
-			next += update_interval;
+			next += update_interval_duration;
 			w.update(direction);
 			if w.ended {
 				game_over();

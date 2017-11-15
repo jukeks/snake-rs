@@ -72,7 +72,7 @@ impl World {
 				match (*self.state)[i][j] {
 					Square::SnakeHead   => text.push_str("@"),
 					Square::SnakeBody   => text.push_str("+"),
-					Square::Food        => text.push_str("x"),
+					Square::Food        => text.push_str("#"),
 					Square::Empty       => text.push_str(" ")
 				}
 
